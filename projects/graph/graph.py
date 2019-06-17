@@ -124,7 +124,29 @@ class Graph:
         starting_vertex to destination_vertex in
         depth-first order.
         """
-        pass  # TODO
+        s = Stack()
+        explored = []
+        # check if exists
+        if starting_vertex in self.vertices:
+            # add starting vertex to Queue
+            s.push([starting_vertex, []])
+        visited = set()
+
+        while s.size() > 0:
+
+            item = s.pop()
+            v = item[0]
+            path = item[1]
+            if v not in visited:
+                if v == destination_vertex:
+                    path.append(v)
+                    return path
+                print(v)
+                visited.add(v)
+                for next_node in self.vertices[v]:
+                    copy = path.copy()
+                    copy.append(v)
+                    s.push([next_node, copy])
 
 
 if __name__ == '__main__':
