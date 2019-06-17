@@ -14,6 +14,7 @@ class Graph:
         """
         Add a vertex to the graph.
         """
+        # if not vertex in self.vertices:
         self.vertices[vertex] = set()
 
     def add_edge(self, v1, v2):
@@ -23,23 +24,55 @@ class Graph:
         # check if keys exist
 
         if v1 in self.vertices and v2 in self.vertices:
-            print({v2})
             self.vertices[v1].add(v2)
-            self.vertices[v2].add(v1)
+        else:
+            raise IndexError("The vertex does not exist")
 
     def bft(self, starting_vertex):
         """
         Print each vertex in breadth-first order
         beginning from starting_vertex.
         """
-        pass  # TODO
+
+        q = Queue()
+        explored = []
+        # check if exists
+        if starting_vertex in self.vertices:
+            # add starting vertex to Queue
+            q.enqueue(starting_vertex)
+        visited = set()
+
+        while q.size() > 0:
+            # dequeue the first node
+            v = q.dequeue()
+            if v not in visited:
+                print(v)
+                visited.add(v)
+            for next_node in self.vertices[v]:
+                q.enqueue(next_node)
 
     def dft(self, starting_vertex):
         """
         Print each vertex in depth-first order
         beginning from starting_vertex.
         """
-        pass  # TODO
+
+        s = Stack()
+        explored = []
+        # check if exists
+        if starting_vertex in self.vertices:
+            # add starting vertex to Queue
+            s.push(starting_vertex)
+        visited = set()
+
+        while s.size() > 0:
+
+            v = s.pop()
+            if v not in visited:
+                print(v)
+                visited.add(v)
+                for next_node in self.vertices[v]:
+                    s.push(next_node)
 
     def dft_recursive(self, starting_vertex):
         """
@@ -67,6 +100,7 @@ class Graph:
 
 
 if __name__ == '__main__':
+
     graph = Graph()  # Instantiate your graph
     # https://github.com/LambdaSchool/Graphs/blob/master/objectives/breadth-first-search/img/bfs-visit-order.png
     graph.add_vertex(1)
@@ -91,6 +125,7 @@ if __name__ == '__main__':
     Should print:
         {1: {2}, 2: {3, 4}, 3: {5}, 4: {6, 7}, 5: {3}, 6: {3}, 7: {1, 6}}
     '''
+    print({1: {2}, 2: {3, 4}, 3: {5}, 4: {6, 7}, 5: {3}, 6: {3}, 7: {1, 6}})
     print(graph.vertices)
 
     '''
@@ -101,7 +136,7 @@ if __name__ == '__main__':
         1, 2, 4, 6, 3, 5, 7
     '''
     graph.dft(1)
-
+    print("\n")
     '''
     Valid BFT paths:
         1, 2, 3, 4, 5, 6, 7
