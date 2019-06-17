@@ -37,9 +37,9 @@ class Graph:
         q = Queue()
         explored = []
         # check if exists
-        if starting_vertex in self.vertices:
-            # add starting vertex to Queue
-            q.enqueue(starting_vertex)
+        # if starting_vertex in self.vertices:
+        # add starting vertex to Queue
+        q.enqueue(starting_vertex)
         visited = set()
 
         while q.size() > 0:
@@ -48,8 +48,8 @@ class Graph:
             if v not in visited:
                 print(v)
                 visited.add(v)
-            for next_node in self.vertices[v]:
-                q.enqueue(next_node)
+                for next_node in self.vertices[v]:
+                    q.enqueue(next_node)
 
     def dft(self, starting_vertex):
         """
@@ -74,13 +74,18 @@ class Graph:
                 for next_node in self.vertices[v]:
                     s.push(next_node)
 
-    def dft_recursive(self, starting_vertex):
+    def dft_recursive(self, starting_vertex, visited=set()):
         """
         Print each vertex in depth-first order
         beginning from starting_vertex.
         This should be done using recursion.
         """
-        pass  # TODO
+
+        if starting_vertex not in visited:
+            print(starting_vertex)
+            visited.add(starting_vertex)
+            for next_node in self.vertices[starting_vertex]:
+                self.dft_recursive(next_node)
 
     def bfs(self, starting_vertex, destination_vertex):
         """
@@ -152,8 +157,9 @@ if __name__ == '__main__':
         1, 2, 4, 3, 7, 6, 5
         1, 2, 4, 3, 7, 5, 6
     '''
-    graph.bft(1)
 
+    graph.bft(1)
+    print("\n")
     '''
     Valid DFT recursive paths:
         1, 2, 3, 5, 4, 6, 7
@@ -161,6 +167,7 @@ if __name__ == '__main__':
         1, 2, 4, 7, 6, 3, 5
         1, 2, 4, 6, 3, 5, 7
     '''
+
     graph.dft_recursive(1)
 
     '''
