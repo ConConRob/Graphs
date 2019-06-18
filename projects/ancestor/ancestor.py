@@ -71,11 +71,11 @@ def find_latest_ancestor(start, family_tree):
         graph.add_edge(parent, child)
     # get the last item in a bwt
 
-    print(graph.bft(start))
+    return graph.bft(start)
 
 
 if __name__ == '__main__':
     # family is the graph from the read me
     family = [(10, 1), (1, 3), (2, 3), (4, 5), (4, 8),
               (11, 8), (3, 6), (5, 6), (5, 7), (8, 9)]
-    find_latest_ancestor(3, family)
+    print(find_latest_ancestor(3, family))
