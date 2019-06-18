@@ -1,6 +1,8 @@
+import sys
+sys.path.append(sys.path[0]+"\\..\\graph")
 
 from random import randint
-
+from util import Queue
 
 class User:
     def __init__(self, name):
@@ -68,7 +70,6 @@ class SocialGraph:
                 friend1 = randint(1, numUsers )
                 friend2 = randint(1, numUsers )
             # make the friendship
-            print(f'f1 = {friend1}, f2 = {friend2}')
             self.addFriendship(friend1, friend2)
             # add friendship to created
             friendships.append((friend1, friend2))
@@ -86,6 +87,22 @@ class SocialGraph:
         """
         visited = {}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
+        q = Queue()
+        # user and path to user
+        q.enqueue([userID, []])
+        
+        while q.size() > 0:
+            item = q.dequeue()
+            currentUserID = item[0]
+            path = item[1]
+            if currentUserID not in visited:
+                visited[currentUserID] = path
+                for next_user in self.friendships[currentUserID]:
+                    new_path = path.copy()
+                    new_path.append(currentUserID)
+                    q.enqueue([next_user, new_path])
+        # del own 
+        del visited[userID]
         return visited
 
 
