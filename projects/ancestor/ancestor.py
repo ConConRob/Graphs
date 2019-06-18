@@ -36,7 +36,7 @@ class Graph:
 
         first_of_highest_floor = -1 # if start does not have a child this won't change
         current_floor = 0
-        q.enqueue([starting_vertex, current_floor ])
+        q.enqueue([starting_vertex, current_floor  ])
         visited = set()
 
         while q.size() > 0:
@@ -45,7 +45,10 @@ class Graph:
             v = item[0]
             floor = item[1]
             if v not in visited:
-                # if higher then current floor set the new floor hight and the first of this height
+                # if floor height is the same check which is lower id number
+                if floor == current_floor and first_of_highest_floor > v:
+                    first_of_highest_floor = v
+                # if higher then current floor set the new floor height 
                 if floor > current_floor:
                     current_floor = floor
                     first_of_highest_floor = v
@@ -58,8 +61,8 @@ def find_latest_ancestor(start, family_tree):
     graph = Graph()
     # build the graph
     for parent_child in family_tree:
-        parent = parent_child[0]
-        child = parent_child[1]
+        child = parent_child[0]
+        parent = parent_child[1]
         # if parent or child not made yet make the node
         # graph class already handles this
         graph.add_vertex(parent)
@@ -75,4 +78,4 @@ if __name__ == '__main__':
     # family is the graph from the read me
     family = [(10, 1), (1, 3), (2, 3), (4, 5), (4, 8),
               (11, 8), (3, 6), (5, 6), (5, 7), (8, 9)]
-    find_latest_ancestor(6, family)
+    find_latest_ancestor(3, family)
