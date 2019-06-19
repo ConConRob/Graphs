@@ -23,7 +23,7 @@ roomGraph={494: [(1, 8), {'e': 457}], 492: [(1, 20), {'e': 400}], 493: [(2, 5), 
 world.loadGraph(roomGraph)
 
 # UNCOMMENT TO VIEW MAP
-world.printRooms()
+# world.printRooms()
 
 player = Player("Name", world.startingRoom)
 
@@ -54,33 +54,34 @@ def move_toward_dead_end(player, map, traversalPath):
     # find direction that is not known in room and take it
     current_room = player.currentRoom
     map_piece =  map[current_room.id]
-    # print(map, '\n')
-    # print(player.currentRoom)
 
+    # get list of possible rooms and go into random one
+    possible_direction_rooms = []
     for key in map_piece:
         if map_piece[key] == '?':
-            direction_to_go = key
-            # move to this room
-            move( player,key, traversalPath)
-            new_room = player.currentRoom
-            # record this move in map_piece
-            map_piece[key] = new_room.id
-            
-            # check if this room has been recorded before
-            if player.currentRoom.id in map:
-                # update
-                map[player.currentRoom.id][opposite_direction(key)] = current_room.id 
-            else:
-            #  record this room in visited
-                new_map_piece = room_direction(player.currentRoom)
-                new_map_piece[opposite_direction(key)] = current_room.id
-                map[new_room.id] = new_map_piece
-            # make another move towards dead end
-            move_toward_dead_end(player, map, traversalPath)
-            break
-        
-   
+            possible_direction_rooms.append(key)
+    if len(possible_direction_rooms) == 0:
+        return
+    direction_to_go = possible_direction_rooms[random.randint(0,len(possible_direction_rooms) -1)]
+    # move to this room
+    move( player,direction_to_go, traversalPath)
+    new_room = player.currentRoom
+    # record this move in map_piece
+    map_piece[direction_to_go] = new_room.id
     
+    # check if this room has been recorded before
+    if player.currentRoom.id in map:
+        # update
+        map[player.currentRoom.id][opposite_direction(direction_to_go)] = current_room.id 
+    else:
+    #  record this room in visited
+        new_map_piece = room_direction(player.currentRoom)
+        new_map_piece[opposite_direction(direction_to_go)] = current_room.id
+        map[new_room.id] = new_map_piece
+    # make another move towards dead end
+    move_toward_dead_end(player, map, traversalPath)
+    
+        
 def find_path_closest_unmapped_room(current_room_id, map):
     # do BFS for ?
     q = Queue()
@@ -111,10 +112,7 @@ def find_path_closest_unmapped_room(current_room_id, map):
                     new_path = path.copy()
                     new_path.append(neighbour)
                     q.enqueue(new_path)
-    # for path1 in possible_paths:
-    #     for path2 in possible_paths:
-    #         if path1 != path2:
-    #             print('wow')
+
     
     if len(possible_paths) == 0:
         return []
@@ -147,11 +145,10 @@ def get_directions(rooms_to_take, map):
 
 
 bestpath = None
-for i in range(100):
+for i in range(10000):
     player.currentRoom = world.startingRoom
     traversalPath = []
     rooms_visited = { player.currentRoom.id: room_direction(player.currentRoom) }
-    
     while len(rooms_visited) < len(roomGraph):
         # go to a dead end (room with no neighbour unexplored rooms)
         move_toward_dead_end(player, rooms_visited, traversalPath)    
