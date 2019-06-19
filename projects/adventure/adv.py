@@ -62,8 +62,8 @@ def move_toward_dead_end(player, map, traversalPath):
             possible_direction_rooms.append(key)
     if len(possible_direction_rooms) == 0:
         return
-    # direction_to_go = possible_direction_rooms[random.randint(0,len(possible_direction_rooms) -1)]
-    direction_to_go = possible_direction_rooms[-1]
+    direction_to_go = possible_direction_rooms[random.randint(0,len(possible_direction_rooms) -1)]
+    # direction_to_go = possible_direction_rooms[-1]
     # move to this room
     move( player,direction_to_go, traversalPath)
     new_room = player.currentRoom
@@ -157,7 +157,7 @@ def get_directions(rooms_to_take, map):
 
 bestpath = None
 #  for furture instead of useing randomnes could try making atable of possible choices but it would proably get too long
-for i in range(10):
+for i in range(1000000):
     player.currentRoom = world.startingRoom
     traversalPath = []
     rooms_visited = { player.currentRoom.id: room_direction(player.currentRoom) }
