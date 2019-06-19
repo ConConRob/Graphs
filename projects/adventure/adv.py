@@ -1,6 +1,8 @@
 import sys
 sys.path.append(sys.path[0]+"\\..\\graph")
 import random
+from collections import Counter
+
 from room import Room
 from player import Player
 from world import World
@@ -54,8 +56,8 @@ def move_toward_dead_end(player, map, traversalPath):
     map_piece =  map[current_room.id]
     # print(map, '\n')
     # print(player.currentRoom)
-    for key in map_piece:
 
+    for key in map_piece:
         if map_piece[key] == '?':
             direction_to_go = key
             # move to this room
@@ -84,6 +86,9 @@ def find_path_closest_unmapped_room(current_room_id, map):
     q = Queue()
     q.enqueue([current_room_id])#queue of paths
     visited = []
+    # FOR STRETCH find all the paths for lowest number of moves and use the path that takes you to the room with the most ?
+    possible_paths = []
+    found_a_possible_path = False
     while q.size() > 0:
         path = q.dequeue()
         room = path[-1] 
@@ -95,16 +100,40 @@ def find_path_closest_unmapped_room(current_room_id, map):
             # print(room)
             for direction_key in map[room]:
                 neighbour = map[room][direction_key]
-                if neighbour == '?':
-                    # found the exit
-                    return path
+                if found_a_possible_path and len(possible_paths[0]) < len(path):
+                    break
+                elif neighbour == '?':
+                    # found a room that has ways to explore
+                    possible_paths.append(path)
+                    found_a_possible_path = True    
                 elif not neighbour in visited:
                     # add path to it to the queue
                     new_path = path.copy()
                     new_path.append(neighbour)
                     q.enqueue(new_path)
-        
-    return [current_room_id]
+    # for path1 in possible_paths:
+    #     for path2 in possible_paths:
+    #         if path1 != path2:
+    #             print('wow')
+    
+    if len(possible_paths) == 0:
+        return []
+    # count the num ? in each room and use the path with the most
+    highest = 0
+    picked_path = None
+    for path in possible_paths:
+        room_id = path[-1]
+        room = map[room_id]
+        count = 0
+        for key in room:
+            if room[key] == '?':
+                count +=1
+        if count > highest:
+            highest = count
+            picked_path = path
+
+    return possible_paths[random.randint(0, len(possible_paths )-1)]
+
 
 def get_directions(rooms_to_take, map):
     directions = []
@@ -117,31 +146,30 @@ def get_directions(rooms_to_take, map):
     return directions
 
 
-traversalPath = []
-rooms_visited = { player.currentRoom.id: room_direction(player.currentRoom) }
-
-
-
-while len(rooms_visited) < len(roomGraph):
-
-    # print(f'================\n\n{rooms_visited}')
-    # go to a dead end (room with no neighbour unexplored rooms)
-    move_toward_dead_end(player, rooms_visited, traversalPath)
-    # print(f'{rooms_visited}')  
-    # print(traversalPath)
-    # print(rooms_visited)     
-    # find path to closest unvisted room
-    path_to_room_with_unvisited = find_path_closest_unmapped_room(player.currentRoom.id, rooms_visited)
-    # convert path to directions 
-    directions_to_room_with_unvisited = get_directions(path_to_room_with_unvisited, rooms_visited)
-    # go to this room
-    for direction in directions_to_room_with_unvisited:
-        move(player,direction,traversalPath)
-    # print(traversalPath)
-    # print(rooms_visited)  
-    # repeat
-
-
+bestpath = None
+for i in range(100):
+    player.currentRoom = world.startingRoom
+    traversalPath = []
+    rooms_visited = { player.currentRoom.id: room_direction(player.currentRoom) }
+    
+    while len(rooms_visited) < len(roomGraph):
+        # go to a dead end (room with no neighbour unexplored rooms)
+        move_toward_dead_end(player, rooms_visited, traversalPath)    
+        # find path to closest unvisted room
+        path_to_room_with_unvisited = find_path_closest_unmapped_room   (player.currentRoom.id, rooms_visited)
+        # convert path to directions 
+        directions_to_room_with_unvisited = get_directions  (path_to_room_with_unvisited, rooms_visited)
+        # go to this room
+        for direction in directions_to_room_with_unvisited:
+            move(player,direction,traversalPath)
+        # repeat
+    # check if first path
+    if not bestpath:
+        bestpath = traversalPath
+    # check if best path
+    if len(bestpath)> len(traversalPath):
+        bestpath = traversalPath
+traversalPath = bestpath
 print(len(traversalPath))
 
                 
@@ -166,10 +194,10 @@ else:
 #######
 # UNCOMMENT TO WALK AROUND
 #######
-player.currentRoom.printRoomDescription(player)
-while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    else:
-        print("I did not understand that command.")
+# player.currentRoom.printRoomDescription(player)
+# while True:
+#     cmds = input("-> ").lower().split(" ")
+#     if cmds[0] in ["n", "s", "e", "w"]:
+#         player.travel(cmds[0], True)
+#     else:
+#         print("I did not understand that command.")
