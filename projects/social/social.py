@@ -1,8 +1,13 @@
+import sys
+sys.path.append(sys.path[0]+"\\..\\graph")
 
+from random import randint
+from util import Queue
 
 class User:
     def __init__(self, name):
         self.name = name
+
 
 class SocialGraph:
     def __init__(self):
@@ -40,15 +45,36 @@ class SocialGraph:
 
         The number of users must be greater than the average number of friendships.
         """
+
         # Reset graph
         self.lastID = 0
         self.users = {}
         self.friendships = {}
         # !!!! IMPLEMENT ME
 
-        # Add users
+        # create all the users
+        for i in range(numUsers):
+            # in future make name
+            self.addUser(i)
 
-        # Create friendships
+        total_friendships = numUsers * avgFriendships / 2
+        # do check to see if this is over half the users. If so throw error
+        # create freinds between users
+        # keep track of made friends
+        friendships = [(None, None)]
+        while total_friendships > 0:
+            # grab two random user ids
+            friend1 = None
+            friend2 = None
+            while friend1 == friend2 or  (friend1, friend2) in friendships or (friend2, friend1) in friendships:
+                friend1 = randint(1, numUsers )
+                friend2 = randint(1, numUsers )
+            # make the friendship
+            self.addFriendship(friend1, friend2)
+            # add friendship to created
+            friendships.append((friend1, friend2))
+            # reduce number of friends to make
+            total_friendships -= 1
 
     def getAllSocialPaths(self, userID):
         """
@@ -61,6 +87,22 @@ class SocialGraph:
         """
         visited = {}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
+        q = Queue()
+        # user and path to user
+        q.enqueue([userID, []])
+        
+        while q.size() > 0:
+            item = q.dequeue()
+            currentUserID = item[0]
+            path = item[1]
+            if currentUserID not in visited:
+                visited[currentUserID] = path
+                for next_user in self.friendships[currentUserID]:
+                    new_path = path.copy()
+                    new_path.append(currentUserID)
+                    q.enqueue([next_user, new_path])
+        # del own 
+        del visited[userID]
         return visited
 
 
