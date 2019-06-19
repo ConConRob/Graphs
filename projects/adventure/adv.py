@@ -62,7 +62,8 @@ def move_toward_dead_end(player, map, traversalPath):
             possible_direction_rooms.append(key)
     if len(possible_direction_rooms) == 0:
         return
-    direction_to_go = possible_direction_rooms[random.randint(0,len(possible_direction_rooms) -1)]
+    # direction_to_go = possible_direction_rooms[random.randint(0,len(possible_direction_rooms) -1)]
+    direction_to_go = possible_direction_rooms[-1]
     # move to this room
     move( player,direction_to_go, traversalPath)
     new_room = player.currentRoom
@@ -83,7 +84,7 @@ def move_toward_dead_end(player, map, traversalPath):
     
         
 def find_path_closest_unmapped_room(current_room_id, map):
-    # do BFS for ?
+    # do BFS for 
     q = Queue()
     q.enqueue([current_room_id])#queue of paths
     visited = []
@@ -113,23 +114,33 @@ def find_path_closest_unmapped_room(current_room_id, map):
                     new_path.append(neighbour)
                     q.enqueue(new_path)
 
-    
+    # PICK THE PATH
+    # the room with 1 unexplored is the best
+    # 3 is next best
     if len(possible_paths) == 0:
         return []
     # count the num ? in each room and use the path with the most
-    highest = 0
+    lowest = 5
     picked_path = None
-    for path in possible_paths:
+    counts = [0 for i in possible_paths]
+    for i, path in enumerate(possible_paths):
         room_id = path[-1]
         room = map[room_id]
         count = 0
         for key in room:
             if room[key] == '?':
                 count +=1
-        if count > highest:
-            highest = count
-            picked_path = path
-
+        counts[i] = count
+    for i in range(len(counts)):
+        # pick this path if count =1
+        if counts[i] == 1:
+            return possible_paths[i]
+    for i in range(len(counts)):
+        # pick this path if count =3
+        if counts[i] == 3:
+            return possible_paths[i]
+    # does not matter what you pick
+    #  try returning to room with the smallest paths to take 
     return possible_paths[random.randint(0, len(possible_paths )-1)]
 
 
@@ -145,7 +156,8 @@ def get_directions(rooms_to_take, map):
 
 
 bestpath = None
-for i in range(10000):
+#  for furture instead of useing randomnes could try making atable of possible choices but it would proably get too long
+for i in range(10):
     player.currentRoom = world.startingRoom
     traversalPath = []
     rooms_visited = { player.currentRoom.id: room_direction(player.currentRoom) }
@@ -167,7 +179,7 @@ for i in range(10000):
     if len(bestpath)> len(traversalPath):
         bestpath = traversalPath
 traversalPath = bestpath
-print(len(traversalPath))
+print(traversalPath)
 
                 
                 
@@ -187,6 +199,18 @@ else:
     print(f"{len(roomGraph) - len(visited_rooms)} unvisited rooms")
 
 
+
+# My Best solution 962 at n = 100 000 
+# ['n', 's', 'w', 'n', 'w', 'w', 's', 'n', 'w', 's', 's', 's', 'w', 'n', 'w', 'w', 'w', 'e', 'e', 'e', 's', 'w', 'w', 's', 'w', 'n', 's', 'e', 'n', 'e', 'e', 'e', 's', 'w', 's', 'w', 'e', 'n', 'w', 'e', 'e', 's', 's', 's', 's', 'w', 's', 's', 's', 'n', 'n', 'w', 's', 's', 'w', 'e', 'n', 'w', 'e', 'n', 'e', 'n', 'e', 's',
+# 's', 's', 's', 'w', 'e', 'n', 'e', 's', 'n', 'e', 's', 's', 'e', 'w', 's', 'w', 'e', 'n', 'n', 'n', 'w', 'w', 'n', 'n', 'n', 'n', 'n', 'w', 's', 'w', 'w', 'w', 'w', 'e', 's', 's', 'w', 'w', 'w', 'w', 'e', 'e', 'e', 's', 'w', 'e', 's', 's', 's', 'n', 'w', 'w', 'e', 'e', 'n', 'w', 'e', 'n', 'n', 'e', 's', 's', 's', 's', 'e', 'w', 'n', 'e', 'w', 'n', 'n', 'n', 'n', 'w', 'w', 'e', 'e', 'n', 'e', 'e', 's', 'w', 's', 'n', 'e', 'n', 'e', 'n', 'w', 'w', 'n', 's', 'w', 'w', 'w', 's', 'w', 's', 'n', 'e', 'n', 'e', 'e', 'n', 'w', 'w', 'n',
+# 'w', 'e', 's', 'e', 'n', 'n', 'w', 'n', 'w', 'e', 'e', 'n', 'n', 's', 'w', 'w', 'e', 'n', 's', 'e', 'e', 'e', 'e', 'n', 'w', 'w', 'e', 'e', 'e', 's', 'n', 'n', 'n', 'w', 'n', 'w', 'e', 's', 'w', 'e', 'e', 's', 'w', 'w', 'w', 'w', 'e', 'n', 'w', 'w', 'w', 'e', 's', 'n', 'e', 'n', 'n', 's', 'w', 'w', 'w', 'e', 'e', 'e', 's', 'e', 'n', 's', 's', 'e', 'e', 'e', 'e', 'n', 's', 'e', 'n', 's', 'e', 'n', 's', 'e', 'e', 'n', 'w', 'e', 'n', 'n', 's', 'e', 's', 'n', 'n', 'n', 'w', 'n', 'n', 'w', 'n', 'w', 'e', 'e', 'w', 's', 'e', 's', 's',
+# 'e', 'n', 'n', 'n', 'n', 'e', 'n', 'n', 's', 's', 'w', 'n', 'n', 'n', 'e', 'e', 's', 's', 's', 'e', 'n', 'n', 'n', 's', 's', 'e', 'n', 'e', 'n', 'n', 's', 'e', 'e', 'w', 's', 'n', 'w', 's', 'w', 'n', 's', 's', 'w', 's', 's', 's', 'e', 'w', 'w', 'n', 's', 'w', 'w', 's', 'e', 'e', 'w', 'w', 'n', 'n', 'e', 'w', 'n', 'w', 'n', 'w', 'n', 's', 'e', 'n', 's', 's', 'w', 'w', 'n', 'w', 'n', 'n', 'w', 'e', 's', 's', 'e', 'n', 'n', 'n', 's', 's', 's', 's', 'w', 'w', 'w', 'n', 's', 'e', 'n', 's', 'e', 's', 'w', 'e', 'n', 'e', 'e', 'e', 'e',
+# 'n', 'n', 'n', 'e', 'n', 'w', 'w', 'e', 'e', 's', 'e', 'n', 'e', 'e', 'w', 'w', 's', 's', 's', 's', 'e', 's', 'e', 'n', 'e', 'e', 'e', 'w', 'n', 's', 'w', 'n', 's', 'w', 's', 'e', 'w', 'w', 's', 'w', 'w', 'w', 's', 's', 's', 's', 'w', 'w', 'n', 'n', 'n', 'w', 'w', 'n', 'w', 'e', 's', 'e', 'n', 's', 'e', 's', 's', 'w', 'n', 's', 'e', 's', 'w', 'w', 'w', 'n', 's', 'w', 'n', 'n', 'n', 'n', 'n', 's', 's', 's', 's', 'w', 'w', 'w', 'e', 'e', 'n', 'w', 'w', 'n', 'w', 'e', 'n', 'n', 's', 's', 's', 'w', 'w', 's', 'w', 'e', 'n', 'w', 'e',
+# 'e', 'e', 'e', 'n', 'n', 's', 's', 'e', 'n', 'n', 'n', 'w', 'e', 'n', 'n', 's', 's', 's', 's', 's', 's', 'e', 's', 'e', 'e', 'n', 'n', 'w', 'n', 's', 'e', 's', 's', 'e', 'e', 'e', 's', 's', 'e', 's', 'e', 'n', 'e', 'n', 'e', 'n', 'n', 'n', 'n', 's', 's', 's', 'e', 'n', 'n', 'n', 's', 'e', 'n', 'n', 'e', 'e', 'n', 's', 'e', 'n', 's', 'e', 'w', 'w', 'w', 'n', 's', 'w', 's', 's', 'w', 's', 's', 'w', 's', 'w', 's', 'w', 'n', 'n', 'e', 'n', 'n', 's', 's', 'w', 'n', 'n', 's', 's', 's', 's', 's', 'e', 'e', 'e', 's', 'n', 'e', 'e', 'e',
+# 'w', 'w', 's', 'e', 'e', 'e', 'e', 'w', 'n', 's', 'w', 'w', 'w', 'n', 'w', 'w', 'n', 'e', 'e', 'e', 'e', 'e', 'e', 's', 'n', 'w', 'w', 'w', 'w', 'w', 'n', 'e', 'n', 'n', 'e', 'e', 'n', 'e', 'w', 's', 'w', 'n', 'n', 'e', 'e', 'e', 's', 'n', 'w', 'w', 'w', 's', 's', 'w', 's', 'e', 's', 'n', 'e', 's', 'e', 'e', 'e', 's', 'n', 'w', 'w', 'w', 'n', 'e', 'n', 'e', 'w', 's', 'e', 'w', 'w', 'w', 'w', 's', 'w', 's', 'w', 's', 'w', 's', 'e', 's', 's', 'e', 'w', 'n', 'e', 'e', 's', 's', 's', 'e', 'n', 's', 'e', 'w', 'w', 's', 'e', 'e', 'w',
+# 'w', 's', 'e', 'e', 'w', 'w', 'n', 'n', 'n', 'n', 'e', 'e', 'e', 'w', 's', 'n', 'w', 'w', 'n', 'e', 'e', 'e', 'w', 'w', 'w', 'w', 'w', 'n', 'w', 's', 's', 'n', 'n', 'n', 'w', 'w', 's', 'w', 's', 'w', 'e', 'n', 'e', 's', 'e', 's', 'n', 'w', 's', 's', 's', 's', 's', 'e', 's', 's', 's', 'e', 's', 'e', 's', 's', 'n', 'n', 'e', 's', 's', 'n', 'n', 'w', 'w', 's', 's', 'n', 'n', 'n', 'e', 'e', 'n', 'e', 's', 's', 'n', 'n', 'e', 'e', 'w', 's', 's', 'e', 'w', 's', 's', 'n', 'n', 'n', 'n', 'w', 'w', 's', 'w', 'w', 'w', 's', 's', 's', 's',
+# 'n', 'n', 'w', 's', 'n', 'e', 'n', 'n', 'n', 'w', 's', 's', 'n', 'n', 'e', 'n', 'n', 'w', 's', 'n', 'n', 'n', 'n', 'e', 'e', 's', 'e', 'n', 'e', 's', 's', 'n', 'n', 'w', 's', 'w', 's', 'e', 's', 's', 'e', 'e', 'e', 'e', 'w', 'w', 'w', 'w', 'n', 'e', 'w', 'n', 'w', 's', 's', 's', 'e', 'w', 'n', 'n', 'n', 'n', 'n', 'w', 's', 's', 'n', 'n', 'w', 'n', 'w', 'w', 's', 'w', 'e', 's', 'w', 'w', 's', 'n', 'e', 'e', 's', 's', 'w', 'e', 's', 'w', 's', 'w', 's', 'n', 'e', 's', 'n', 'e', 's', 's', 's', 'n', 'n', 'n', 'w', 'n', 'w', 'n', 's',
+# 'e', 'e', 'e', 's', 's', 's', 's', 's', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'w', 'w', 'e', 's', 's', 's', 'w', 'e', 'n', 'n', 'n', 'e', 'e', 'n', 'n', 'e', 'w', 'w', 'w', 'w', 's', 'w', 's', 's']
 
 #######
 # UNCOMMENT TO WALK AROUND
