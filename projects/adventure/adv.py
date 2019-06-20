@@ -180,17 +180,17 @@ player = Player_with_map("Name", world.startingRoom)
 
 bestpath = None
 #  for furture instead of using random could try making atable of possible choices but it would proably get too long
-for i in range(400):
+for i in range(1000):
     player.reset()
     traversal_path= player.go_to_every_room(len(roomGraph)) 
     # check if first path
     if not bestpath:
         bestpath = traversal_path
-        print(len(bestpath))
+        print(f'Found new best of {len(bestpath)} at loop {i}')
     # check if best path
     if len(bestpath) > len(traversal_path):
         bestpath = traversal_path
-        print(len(bestpath))
+        print(f'Found new best of {len(bestpath)} at loop {i}')
 
 traversalPath = bestpath
 # print(traversalPath)          
