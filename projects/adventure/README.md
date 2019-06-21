@@ -54,5 +54,9 @@ If all paths have been explored, you're done!
 ## Stretch Problems
 
 It is very difficult to calculate the shortest possible path that traverses the entire graph. Why?
+Yes, it would be a hard challenge to find the shortest possible solution. The only way I could think of doing that is making a graph of every single possible move. I think that would be O(n^n). It could get optimised by doing a first pass solution and eliminating any path that starts to be longer and I'm sure some form of caching could be used. So this problem could be reduced greatly from the O I am guessing.
 
 My best path is 990 moves. Can you find a shorter path?
+
+I did a few different methods with out random and got 1007 and 1011.
+I then used randomness and looped the problem. The best result I got was 970

@@ -14,8 +14,8 @@ class Graph:
         """
         Add a vertex to the graph.
         """
-        if not vertex in self.vertices:
-         self.vertices[vertex] = set()
+        # if not vertex in self.vertices:
+        self.vertices[vertex] = set()
 
     def add_edge(self, v1, v2):
         """
@@ -40,17 +40,16 @@ class Graph:
         # add starting vertex to Queue
         q.enqueue(starting_vertex)
         visited = set()
-        latest = None
+
         while q.size() > 0:
             # dequeue the first node
             v = q.dequeue()
             if v not in visited:
                 print(v)
-                latest = v
                 visited.add(v)
                 for next_node in self.vertices[v]:
                     q.enqueue(next_node)
-        return latest # returns the last value looked at
+
     def dft(self, starting_vertex):
         """
         Print each vertex in depth-first order
